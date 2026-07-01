@@ -6,6 +6,8 @@ use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use thiserror::Error;
 
 const DEFAULT_POOL_SIZE: usize = 16;
+const DATABASE_URL_ENV: &str = "SPACE_DATABASE_URL";
+const DATABASE_POOL_MAX_SIZE_ENV: &str = "SPACE_DATABASE_POOL_MAX_SIZE";
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
 pub type DbPool = Pool;
@@ -19,8 +21,8 @@ pub struct DatabaseConfig {
 impl DatabaseConfig {
     pub fn from_env() -> Result<Self, DatabaseError> {
         let database_url =
-            env::var("DATABASE_URL").map_err(|_| DatabaseError::MissingDatabaseUrl)?;
-        let max_size = match env::var("DATABASE_POOL_MAX_SIZE") {
+            env::var(DATABASE_URL_ENV).map_err(|_| DatabaseError::MissingDatabaseUrl)?;
+        let max_size = match env::var(DATABASE_POOL_MAX_SIZE_ENV) {
             Ok(value) => value.parse()?,
             Err(_) => DEFAULT_POOL_SIZE,
         };
@@ -66,9 +68,9 @@ where
 
 #[derive(Debug, Error)]
 pub enum DatabaseError {
-    #[error("DATABASE_URL must be set")]
+    #[error("SPACE_DATABASE_URL must be set")]
     MissingDatabaseUrl,
-    #[error("invalid DATABASE_POOL_MAX_SIZE")]
+    #[error("invalid SPACE_DATABASE_POOL_MAX_SIZE")]
     InvalidPoolSize(#[from] ParseIntError),
     #[error("failed to build database pool")]
     PoolBuild(#[source] BuildError),
