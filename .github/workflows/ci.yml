@@ -1,0 +1,61 @@
+name: CI
+
+on:
+    pull_request:
+        branches:
+            - main
+            - "release/v*.*.*"
+
+    push:
+        branches:
+            - main
+            - "release/v*.*.*"
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    rustfmt:
+        name: rustfmt
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Install rustfmt
+              run: rustup component add rustfmt
+
+            - name: Check formatting
+              run: cargo fmt --all -- --check
+
+    clippy-and-tests:
+        name: clippy + tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Install clippy
+              run: rustup component add clippy
+
+            - name: Cache Rust
+              uses: Swatinem/rust-cache@v2
+
+            - name: Clippy
+              run: cargo clippy --all-targets --all-features -- -D warnings
+
+            - name: Tests
+              run: cargo test --all-features
+
+    commit-check:
+        name: conventional commits
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+
+            - name: Check Conventional Commits
+              uses: cocogitto/cocogitto-action@v4
