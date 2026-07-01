@@ -1,0 +1,16 @@
+[package]
+name = "collector"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+deadpool-diesel.workspace = true
+diesel.workspace = true
+diesel_migrations.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+uuid.workspace = true
