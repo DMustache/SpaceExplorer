@@ -1,11 +1,13 @@
-use collector::db;
+mod database;
+
+use database::{DatabaseConfig, DatabaseError, create_pool, run_migrations};
 
 #[tokio::main]
-async fn main() -> Result<(), db::DatabaseError> {
-    let database_config = db::DatabaseConfig::from_env()?;
-    let database_pool = db::create_pool(&database_config)?;
+async fn main() -> Result<(), DatabaseError> {
+    let database_config = DatabaseConfig::from_env()?;
+    let database_pool = create_pool(&database_config)?;
 
-    db::run_migrations(&database_pool).await?;
+    run_migrations(&database_pool).await?;
 
     println!("collector database migrations completed");
 

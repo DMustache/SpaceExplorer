@@ -5,6 +5,9 @@ use diesel::{Connection, PgConnection};
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use thiserror::Error;
 
+mod models;
+mod schema;
+
 const DEFAULT_POOL_SIZE: usize = 16;
 const DATABASE_URL_ENV: &str = "SPACE_DATABASE_URL";
 const DATABASE_POOL_MAX_SIZE_ENV: &str = "SPACE_DATABASE_POOL_MAX_SIZE";
